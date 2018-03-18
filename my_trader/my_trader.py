@@ -7,7 +7,6 @@ import numpy as np
 from Robinhood import Robinhood
 from pandas import *
 import xlrd
-import  talib as ta
 from datetime import datetime
 from pandas_datareader import data as da
 import pandas as pd
