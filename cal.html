@@ -1,0 +1,40 @@
+<div class="container">
+    <div class="row">
+        <div class="<?php echo $pageOptions['class']; ?>" id="content-col">
+            <?php
+             while(have_posts()):the_post();
+             	if($post->post_content!="") :
+						echo '<div class="page-content">';
+                              the_content();
+						echo '</div>';
+                              echo '<div class="spacer-20"></div>';
+                      endif;
+             endwhile;
+            if (!empty($custom['imic_our_location_text'][0])) {
+                echo '<header class="single-post-header clearfix">
+                        <h2 class="post-title">' . $custom['imic_our_location_text'][0] . '</h2>
+                      </header>';
+            }
+            ?>
+            <div class="post-content">
+                <?php
+               if ($custom['imic_contact_map_display'][0] == 'yes' && !empty($custom['imic_contact_map_box_code'][0])) {
+                    echo '<div id="gmap">';
+                    echo $custom['imic_contact_map_box_code'][0];
+                    echo '</div>';
+                }
+                ?>
+
+				<?php if ($imic_options['switch_sharing'] == 1 && $imic_options['share_post_types']['2'] == '1') { ?>
+                    <?php imic_share_buttons(); ?>
+                <?php } ?>
+            </div>
+        </div>
+        <?php if(!empty($pageOptions['sidebar'])){ ?>
+        <!-- Start Sidebar -->
+        <div class="col-md-3 sidebar" id="sidebar-col">
+            <?php dynamic_sidebar($pageOptions['sidebar']); ?>
+        </div>
+        <?php } ?>
+    </div>
+</div>

@@ -4,12 +4,7 @@
 
 
 from my_trader import *
-import pandas as pd
-import numpy as np
 from selenium import webdriver
-import urllib2
-import time
-import re
 import getpass
 
 from selenium.webdriver.support.ui import WebDriverWait
@@ -65,7 +60,7 @@ def render_text_contact(get_temp):
             #print ("!!!! verify: " + get_temp)
             #time.sleep(step_wait)
             #flag= True
-            
+
     header=["name","position","location","industry"]
     count_header = 0
     #get_temp = get_temp.text.split(":")
@@ -80,7 +75,7 @@ def render_text_contact(get_temp):
             result = result.append([[header[count_header],get_temp[i]]])
             count_header +=1
 
-    result = result.reindex()    
+    result = result.reindex()
     return result
 
 def get_progress(name):
@@ -108,8 +103,8 @@ password = getpass.getpass()
 
 step_wait = 2
 page_wait = 5
-collection_name = "Finance and Technology"
-list_row_number = 0  #input the list position of the list you want to crawl, starting 0
+collection_name = "Sacramento Metropolitan Area_Revenue 20k-50k_low risk"
+list_row_number = 2  #input the list position of the list you want to crawl, starting 0
 try:
     progress = get_progress(collection_name)
 except:
@@ -118,9 +113,9 @@ except:
 #flag initialize
 from_beginning =  True
 
-rebot_flag = True #default to be True to start with the program 
+rebot_flag = True #default to be True to start with the program
 
-just_open_window = False  #default to be False to start with the program 
+just_open_window = False  #default to be False to start with the program
 #-------------------------------
 
 
@@ -128,7 +123,7 @@ just_open_window = False  #default to be False to start with the program
 
 
 
-if rebot_flag:  
+if rebot_flag:
     #reset flag
     rebot_flag = False
 #===============OPEN BROWER=============================================
@@ -168,6 +163,10 @@ if rebot_flag:
     total_page = driver.find_element_by_class_name("total-page")
     total_page=total_page.get_attribute('innerHTML')
     total_page = int(total_page)
+    if not from_beginning:
+        last_page = driver.find_element_by_class_name("last-page")
+        driver.execute_script("arguments[0].click();", last_page)
+        time.sleep(step_wait)
 #================================================================================
 if just_open_window:
     raise SystemExit(0)
@@ -182,45 +181,51 @@ while True:
         company_list = driver.find_elements_by_class_name("clickable")
         name_list=[]
         for i in range(len(company_list)):
-            name_list.append(company_list[i].text)    
+            name_list.append(company_list[i].text)
 
         for i in name_list:
             #clear_output()
 
-            #company_list = driver.find_elements_by_class_name("clickable")        
+            #company_list = driver.find_elements_by_class_name("clickable")
             #get_company = company_list[i]
             if i in progress:
                 print (i+ " already in database, skipping")
                 continue
             page_trial = 0
             while True:
-                try: 
+                try:
                     if page_trial <3:
                         time.sleep(page_wait)
-                        driver.implicitly_wait(10)   
+                        driver.implicitly_wait(10)
                         get_company = driver.find_element_by_link_text(i)
                         driver.execute_script("return arguments[0].scrollIntoView();", get_company)
                         driver.execute_script("arguments[0].click();", get_company)
+
                         #company_list[i].click()
                         WebDriverWait(driver, 80).until(EC.presence_of_element_located((By.ID, "totalContacts")))
                         time.sleep(step_wait)
+
                         #get basic information
                         info = {}
                         address = driver.find_element_by_class_name("company-address").text
                         company_name = driver.find_element_by_class_name("name").text
+                        business_description = driver.find_element_by_class_name("description").text.split("\n")[1]
+                        industry = driver.find_element_by_class_name("industry").text.split("\n")[2].split(":")[1][12:]
+                        sic = driver.find_element_by_class_name("industry").text.split("\n")[2].split(":")[1][0:8]
                         try:
                             website = driver.find_element_by_class_name("url").text
                             info["website"] = website
                         except:
                             print ("no website found")
                             info["website"]=np.NaN
+
                         data = driver.find_elements_by_class_name("data-container")
                         for i in range(len(data)):
 
                             try:
                                 label=data[i].find_element_by_class_name("data-label")
                             except:
-                                continue 
+                                continue
                                 #label=data[i].find_element_by_class_name("data-label wide")
                             value=data[i].find_elements_by_class_name("data-value")
                             value = value[0].text
@@ -230,25 +235,25 @@ while True:
 
                         info["address"] = address
                         info["company_name"] = company_name
+                        info["business_description"] = business_description
+                        info["industry"] = industry
+                        info["sic"] = sic
 
                         mongodb.db[collection_name].insert_one(info)
-                        print (company_name + ": basic information got")
-                        #get description about the company
 
-                        data_title = ["description","industry","highlights"]
-                        description=pd.DataFrame()
-                        for i in data_title:
-                            get_temp = driver.find_element_by_class_name("highlights")
-                            get_temp = get_temp.text.split("\n")
-                            #get_temp = get_temp.text.split(":")
+                        #get highlights
+                        highlights = pd.DataFrame()
+                        get_temp = driver.find_element_by_class_name("highlights").text
+                        get_temp = get_temp.split("\n")
                         for i in range(len(get_temp)):
-                            get_temp[i] = get_temp[i].encode('ascii','ignore')
+                            get_temp[i] = get_temp[i].encode('ascii', 'ignore')
                             get = get_temp[i].split(":")
-                            description = description.append([get])
-                        description = description.set_index(0)
-                        description=json.loads(description.to_json()).values()[0]
-                        mongodb.db[collection_name].update_one({"company_name":company_name},{"$set":description},upsert=True)
-                        print (company_name + ": description information got")
+                            highlights = highlights.append([get])
+                        highlights = highlights[2:]
+                        highlights = highlights.set_index(0)
+                        highlights=json.loads(highlights.to_json()).values()[0]
+                        mongodb.db[collection_name].update_one({"company_name":company_name},{"$set":highlights},upsert=True)
+                        print (company_name + ":business information got")
                         break
                     else:
                         break
@@ -258,11 +263,11 @@ while True:
                     print ("---------------")
                     driver.back()
                     driver.forward()
-                    page_trial +=1            
+                    page_trial +=1
 
             #Get contacts
             contacts_flag = False
-            contact_trial = 0 
+            contact_trial = 0
             while not contacts_flag:
                 try:
                     contacts = driver.find_element_by_id("totalContacts").text
@@ -280,7 +285,8 @@ while True:
                             driver.execute_script("arguments[0].click();", driver.find_element_by_id("company_contacts"))
                         time.sleep(step_wait)
                         driver.implicitly_wait(20)
-                        WebDriverWait(driver, step_wait).until(EC.presence_of_element_located((By.CLASS_NAME, "detail-container")))                                   
+                        time.sleep(step_wait)
+                        WebDriverWait(driver, step_wait).until(EC.presence_of_element_located((By.CLASS_NAME, "detail-container")))
                         contacts = driver.find_elements_by_class_name("detail-container")
 
                         contacts = driver.find_elements_by_class_name("search-result-container")
@@ -299,7 +305,7 @@ while True:
                         print ("no contact available")
                         break
 
-                # page wait time   
+                # page wait time
 
                 except Exception as e:
                     print ("--contact------")
@@ -318,23 +324,23 @@ while True:
         print ("---------------")
         driver.refresh()
         driver.back()
-            
+        continue
         # next page
     if from_beginning:
-        if total_page > current_page:
+        if current_page < 100:
             next_page = driver.find_element_by_class_name("next-page")
             driver.execute_script("arguments[0].click();", next_page)
             time.sleep(page_wait)
-            driver.implicitly_wait(10) 
+            driver.implicitly_wait(10)
         else:
             break
     else:
-        if current_page>80:
+        if current_page>27:
             #print "previous page"
             last_page = driver.find_element_by_class_name("previous-page")
             driver.execute_script("arguments[0].click();", last_page)
             time.sleep(page_wait)
-            driver.implicitly_wait(10) 
+            driver.implicitly_wait(10)
         else:
             break
 

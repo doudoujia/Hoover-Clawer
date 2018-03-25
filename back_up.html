@@ -1,0 +1,28 @@
+                   <div class="row">
+                    <form method="post" id="contactform" name="contactform" class="contact-form-native" action="<?php echo get_template_directory_uri() ?>/mail/contact.php">
+                        <div class="col-md-6 margin-15">
+                            <div class="form-group">
+                                <input type="text" id="name" name="name"  class="form-control input-lg" placeholder="<?php _e('Name*','framework'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="email" name="email"  class="form-control input-lg" placeholder="<?php _e('Email*','framework'); ?>">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="phone" name="phone" class="form-control input-lg" placeholder="<?php _e('Phone','framework'); ?>">
+                                <input type ="hidden" name ="image_path" id="image_path" value ="<?php echo get_template_directory_uri() ?>">
+                            <input id="admin_email" name="admin_email" type="hidden" value ="<?php echo $admin_email; ?>">
+                            <input id="subject" name="subject" type="hidden" value ="<?php echo $subject_email; ?>">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <textarea cols="6" rows="7" id="comments" name="comments" class="form-control input-lg" placeholder="<?php _e('Message','framework'); ?>"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <input id="submit" name="submit" type="submit" class="btn btn-primary btn-lg pull-right" value="<?php _e('Submit now!','framework'); ?>">
+                        </div>
+                    </form>
+                    <div class="clearfix"></div>
+                    <div id="message"></div>
+                   </div>
