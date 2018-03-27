@@ -253,7 +253,7 @@ while True:
                         highlights = highlights.set_index(0)
                         highlights=json.loads(highlights.to_json()).values()[0]
                         mongodb.db[collection_name].update_one({"company_name":company_name},{"$set":highlights},upsert=True)
-                        print (company_name + ":business information got")
+                        print (company_name + ": business information got")
                         break
                     else:
                         break
@@ -323,24 +323,37 @@ while True:
         print e
         print ("---------------")
         driver.refresh()
-        driver.back()
         continue
         # next page
     if from_beginning:
         if current_page < 100:
-            next_page = driver.find_element_by_class_name("next-page")
-            driver.execute_script("arguments[0].click();", next_page)
-            time.sleep(page_wait)
-            driver.implicitly_wait(10)
+            try:
+                next_page = driver.find_element_by_class_name("next-page")
+                driver.execute_script("arguments[0].click();", next_page)
+                time.sleep(page_wait)
+                driver.implicitly_wait(10)
+                page_changed = True
+            except Exception as e:
+                print ("------Page change error-----")
+                driver.refresh()
+                time.sleep(5)
+                continue
+
         else:
             break
     else:
         if current_page>27:
             #print "previous page"
-            last_page = driver.find_element_by_class_name("previous-page")
-            driver.execute_script("arguments[0].click();", last_page)
-            time.sleep(page_wait)
-            driver.implicitly_wait(10)
+            try:
+                last_page = driver.find_element_by_class_name("previous-page")
+                driver.execute_script("arguments[0].click();", last_page)
+                time.sleep(page_wait)
+                driver.implicitly_wait(10)
+            except Exception as e:
+                print ("------Page change error-----")
+                driver.refresh()
+                time.sleep(5)
+                continue
         else:
             break
 
