@@ -326,7 +326,7 @@ while True:
         continue
         # next page
     if from_beginning:
-        if current_page < 100:
+        if current_page < 200:
             try:
                 next_page = driver.find_element_by_class_name("next-page")
                 driver.execute_script("arguments[0].click();", next_page)
