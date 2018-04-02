@@ -103,8 +103,8 @@ password = getpass.getpass()
 
 step_wait = 2
 page_wait = 5
-collection_name = "Sacramento Metropolitan Area_Revenue 20k-50k_low risk"
-list_row_number = 2  #input the list position of the list you want to crawl, starting 0
+collection_name = "California Minority Wholesaler"
+list_row_number = 6  #input the list position of the list you want to crawl, starting 0
 try:
     progress = get_progress(collection_name)
 except:
@@ -113,9 +113,9 @@ except:
 #flag initialize
 from_beginning =  True
 
-rebot_flag = True #default to be True to start with the program
+rebot_flag = False #default to be True to start with the program
 
-just_open_window = False  #default to be False to start with the program
+just_open_window = True  #default to be False to start with the program
 #-------------------------------
 
 
@@ -148,12 +148,12 @@ if rebot_flag:
 
     # list selector
 
-    list_ele = driver.find_elements_by_class_name("name-row")
-    get = list_ele[list_row_number]
-    get.find_element_by_tag_name("a").click()
+#    list_ele = driver.find_elements_by_class_name("name-row")
+#    get = list_ele[list_row_number]
+#    get.find_element_by_tag_name("a").click()
 
-
-
+    list_ele = driver.find_elements_by_link_text(collection_name)[1]
+    driver.execute_script("arguments[0].click();", list_ele)
     #page info
 
     current_page = driver.find_element_by_class_name("current-page")
@@ -303,6 +303,7 @@ while True:
                         break
                     else:
                         print ("no contact available")
+                        mongodb.db[collection_name].update_one({"company_name":company_name},{"$set":{"contact":"None"}},upsert=True)
                         break
 
                 # page wait time
@@ -326,7 +327,7 @@ while True:
         continue
         # next page
     if from_beginning:
-        if current_page < 200:
+        if current_page <=total_page:
             try:
                 next_page = driver.find_element_by_class_name("next-page")
                 driver.execute_script("arguments[0].click();", next_page)
@@ -356,7 +357,7 @@ while True:
                 continue
         else:
             break
-
+driver.quit()
 #================================================    
 #Getting hoover data
 
@@ -367,12 +368,18 @@ hoover_contact_temp=hoover_data.loc[:,"contact"].dropna()
 #Getting hoover contact data
 hoover_contacts = pd.DataFrame()
 for i in range(len(hoover_contact_temp)):
-    for j in hoover_contact_temp.iloc[i]:
-        temp = pd.DataFrame(j,index=[hoover_contact_temp.index[i]])
-        hoover_contacts = hoover_contacts.append(temp)
+    if hoover_contact_temp.iloc[i] != "None":
+        for j in hoover_contact_temp.iloc[i]:
+            try:
+                temp = pd.DataFrame(j,index=[hoover_contact_temp.index[i]])
+                hoover_contacts = hoover_contacts.append(temp)
+            except Exception as e:
+                print (e)
+                #input("any enter to continue")
+                continue
 
 hoover_contacts.index.name = "company_name"
-hoover_data.to_csv(collection_name + ".csv")
+hoover_data.to_csv(collection_name + ".csv",encoding="utf-8")
 hoover_contacts.to_csv(collection_name+"_contacts.csv")
 
 
