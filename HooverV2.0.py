@@ -103,7 +103,7 @@ password = getpass.getpass()
 
 step_wait = 2
 page_wait = 5
-collection_name = "California Minority Wholesaler"
+collection_name = "California Minority Retailer"
 list_row_number = 6  #input the list position of the list you want to crawl, starting 0
 try:
     progress = get_progress(collection_name)
@@ -113,9 +113,9 @@ except:
 #flag initialize
 from_beginning =  True
 
-rebot_flag = False #default to be True to start with the program
+rebot_flag = True #default to be True to start with the program
 
-just_open_window = True  #default to be False to start with the program
+just_open_window = False  #default to be False to start with the program
 #-------------------------------
 
 

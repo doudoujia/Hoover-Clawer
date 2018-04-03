@@ -1,14 +1,14 @@
-1522391318791	geckodriver	INFO	geckodriver 0.20.0
-1522391318826	geckodriver	INFO	Listening on 127.0.0.1:59009
-1522391321776	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "-marionette" "-profile" "C:\\Users\\gli26\\AppData\\Local\\Temp\\rust_mozprofile.a37xyzzwbWfT"
+1522713193261	geckodriver	INFO	geckodriver 0.20.0
+1522713193312	geckodriver	INFO	Listening on 127.0.0.1:56662
+1522713196293	mozrunner::runner	INFO	Running command: "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe" "-marionette" "-profile" "C:\\Users\\gli26\\AppData\\Local\\Temp\\rust_mozprofile.vtAkRwCsllGr"
 Unable to read VR Path Registry from C:\Users\gli26\AppData\Local\openvr\openvrpaths.vrpath
-1522391324541	Marionette	INFO	Enabled via --marionette
-Unable to read VR Path Registry from C:\Users\gli26\AppData\Local\openvr\openvrpaths.vrpath
-Unable to read VR Path Registry from C:\Users\gli26\AppData\Local\openvr\openvrpaths.vrpath
+1522713199014	Marionette	INFO	Enabled via --marionette
 Unable to read VR Path Registry from C:\Users\gli26\AppData\Local\openvr\openvrpaths.vrpath
 Unable to read VR Path Registry from C:\Users\gli26\AppData\Local\openvr\openvrpaths.vrpath
-1522391329593	Marionette	INFO	Listening on port 59034
-1522391329678	Marionette	WARN	TLS certificate errors will be ignored for this session
+Unable to read VR Path Registry from C:\Users\gli26\AppData\Local\openvr\openvrpaths.vrpath
+1522713203912	Marionette	INFO	Listening on port 56673
+Unable to read VR Path Registry from C:\Users\gli26\AppData\Local\openvr\openvrpaths.vrpath
+1522713204482	Marionette	WARN	TLS certificate errors will be ignored for this session
 JavaScript error: https://cdn.avention.com/assets/1237ed5f92/js/list.js?, line 26: TypeError: this.ui.removeBtn is undefined
 JavaScript error: https://cdn.avention.com/assets/1237ed5f92/js/list.js?, line 26: TypeError: this.ui.removeBtn is undefined
 JavaScript error: https://cdn.avention.com/assets/1237ed5f92/js/list.js?, line 26: TypeError: this.ui.removeBtn is undefined
